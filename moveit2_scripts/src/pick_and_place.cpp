@@ -4,6 +4,9 @@
 #include <moveit_msgs/msg/display_robot_state.hpp>
 #include <moveit_msgs/msg/display_trajectory.hpp>
 
+#include <chrono>
+#include <thread>
+
 static const rclcpp::Logger LOGGER = rclcpp::get_logger("move_group_demo");
 
 int main(int argc, char **argv) {
@@ -123,7 +126,7 @@ int main(int argc, char **argv) {
     target_pose1.orientation.y = 0.00;
     target_pose1.orientation.z = 0.00;
     target_pose1.orientation.w = 0.00;
-    target_pose1.position.x = 0.339; // 0.343
+    target_pose1.position.x = 0.340; // 0.343
     target_pose1.position.y = -0.02; // 0.132
     target_pose1.position.z = 0.264; // 0.264
   }
@@ -145,13 +148,18 @@ int main(int argc, char **argv) {
   // 4. Close Gripper
 
   RCLCPP_INFO(LOGGER, "Close Gripper!");
-
-  joint_group_positions_gripper[2] = 0.70; // 65 -> little bit slip
+  if (target_env_ == "real") {
+    joint_group_positions_gripper[2] = 0.70; // 65 -> little bit slip
+  } else {
+    joint_group_positions_gripper[2] = 0.65; // 65 -> little bit slip
+  }
   move_group_gripper.setJointValueTarget(joint_group_positions_gripper);
 
   success_gripper = (move_group_gripper.plan(my_plan_gripper) ==
                      moveit::core::MoveItErrorCode::SUCCESS);
   move_group_gripper.execute(my_plan_gripper);
+
+  std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
   // 5. Retreat / Move back up
 
