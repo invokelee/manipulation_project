@@ -1,6 +1,6 @@
 # Open5GS Practice
 
-# Installation and Configuration and demonstration
+## Installation and Configuration and demonstration
 
 ICT Innovation Square
 
@@ -12,7 +12,7 @@ ICT Innovation Square
 
 <img src="img/Ex-open5gs-report-LeeSangHoon_0.png" width="50%">
 
-# Network Configuration
+## Network Configuration
 
 Network mode : NAT \+ Host\-Only Network
 
@@ -57,85 +57,75 @@ sudo netplan apply
 ** for checking, run "Ifconfig"
 ```
 
-<span style="color:#222222"> __node\#1\(5G CN\) \- __ </span>  <span style="color:#222222"> __Open5GS Installation__ </span>
+## <span style="color:#222222"> __node\#1\(5G CN\) \- __ </span>  <span style="color:#222222"> __Open5GS Installation__ </span>
 
-<span style="color:#222222">Node\#1: Ubuntu 20\.04:</span>
+### <span style="color:#222222">Node\#1: Ubuntu 20\.04:</span>
 
-<span style="color:#222222">Install Open5GS with a Package Manager</span>
+#### 1 <span style="color:#222222">Install Open5GS with a Package Manager</span>
 
-<span style="color:#222222">mongodb</span>  <span style="color:#222222"> Installation:</span>
+#### - <span style="color:#222222">mongodb</span>  <span style="color:#222222"> Installation:</span>
+```bash
+sudo apt-get install gnupg curl
 
-<span style="color:#222222">Install the </span>  <span style="color:#222222">WebUI</span>  <span style="color:#222222"> of Open5GS</span>
+curl -fsSL https://www.mongodb.org/static/pgp/server-6.0.asc | sudo gpg -o /usr/share/keyrings/mongodb-server-6.0.gpg    --dearmor
 
-<span style="color:#222222">Node\.js Installation:</span>
+echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-6.0.gpg ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
 
-<span style="color:#222222">\# Download and import the </span>  <span style="color:#222222">Nodesource</span>  <span style="color:#222222"> GPG key</span>
+sudo apt-get update
+sudo apt-get install -y mongodb-org=6.0.17 mongodb-org-database=6.0.17 mongodb-org-server=6.0.17 mongodb-org-mongos=6.0.17 mongodb-org-tools=6.0.17
 
-<span style="color:#222222">sudo</span>  <span style="color:#222222"> apt update</span>
+sudo systemctl start mongod
+```
+#### - open5gs Installation:
+```bash
+sudo add-apt-repository ppa:open5gs/latest
+sudo apt update
+sudo apt install –y open5gs
+```
+#### 2 <span style="color:#222222">Install the </span>  <span style="color:#222222">WebUI</span>  <span style="color:#222222"> of Open5GS</span>
 
-<span style="color:#222222">sudo</span>  <span style="color:#222222"> apt install \-y ca\-certificates curl </span>  <span style="color:#222222">gnupg</span>
+#### - <span style="color:#222222">Node\.js Installation:</span>
+``` bash
+# Download and import the Nodesource GPG key
+sudo apt update
+sudo apt install -y ca-certificates curl gnupg
 
-<span style="color:#222222">sudo</span>  <span style="color:#222222"> </span>  <span style="color:#222222">mkdir</span>  <span style="color:#222222"> \-p /</span>  <span style="color:#222222">etc</span>  <span style="color:#222222">/apt/keyrings</span>
+sudo mkdir -p /etc/apt/keyrings
+curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
 
-<span style="color:#222222">curl \-</span>  <span style="color:#222222">fsSL</span>  <span style="color:#222222"> https://deb\.nodesource\.com/gpgkey/nodesource\-repo\.gpg\.key | </span>  <span style="color:#222222">sudo</span>  <span style="color:#222222"> </span>  <span style="color:#222222">gpg</span>  <span style="color:#222222"> \-\-</span>  <span style="color:#222222">dearmor</span>  <span style="color:#222222"> \-o /</span>  <span style="color:#222222">etc</span>  <span style="color:#222222">/apt/keyrings/</span>  <span style="color:#222222">nodesource\.gpg</span>
+# Create deb repository
+NODE_MAJOR=20
+echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | sudo tee /etc/apt/sources.list.d/nodesource.list
 
-<span style="color:#222222">\# Create deb repository</span>
+# Run Update and Install
+sudo apt update
+sudo apt install nodejs -y
+```
+#### - Install WebUI:
+``` bash
+curl -fsSL https://open5gs.org/open5gs/assets/webui/install | sudo -E bash -
+```
+#### - <span style="color:#222222">Routing setting:</span>
+``` bash
+sudo sysctl -w net.ipv4.ip_forward=1
+sudo sysctl -w net.ipv6.conf.all.forwarding=1
 
-<span style="color:#222222">NODE\_MAJOR=20</span>
+sudo iptables -t nat -A POSTROUTING -s 10.45.0.0/16 ! -o ogstun -j MASQUERADE
+sudo ip6tables -t nat -A POSTROUTING -s 2001:230:cafe::/48 ! -o ogstun -j MASQUERADE
+```
 
-<span style="color:#222222">echo "deb \[signed\-by=/</span>  <span style="color:#222222">etc</span>  <span style="color:#222222">/apt/keyrings/</span>  <span style="color:#222222">nodesource\.gpg</span>  <span style="color:#222222">\] https://deb\.nodesource\.com/node\_$NODE\_MAJOR\.x </span>  <span style="color:#222222">nodistro</span>  <span style="color:#222222"> main" | </span>  <span style="color:#222222">sudo</span>  <span style="color:#222222"> tee /</span>  <span style="color:#222222">etc</span>  <span style="color:#222222">/apt/</span>  <span style="color:#222222">sources\.list\.d</span>  <span style="color:#222222">/</span>  <span style="color:#222222">nodesource\.list</span>
+## <span style="color:#222222"> __node\#1\(5G CN\) \- __ </span>  <span style="color:#222222"> __Open5GS Installation \- Continue__ </span>
 
-<span style="color:#222222">\# Run Update and Install</span>
+### <span style="color:#222222">Node\#1: Ubuntu 20\.04:</span>
+#### 3 <span style="color:#222222">Configure Open5GS</span>
+  <span style="color:#222222">Out of the box\, the default configurations see all of the Open5GS components </span>
+  <span style="color:#222222">fully configured for use on a single computer\. </span>
+  <span style="color:#222222">They are set to communicate with each other using the local loopback address space \(127\.0\.0\.X\)\.</span>
+  <span style="color:#222222">If needed:</span>
+    <span style="color:#222222">Setup a 4G/ 5G NSA Core</span>
+    <span style="color:#222222">Setup a 5G Core</span>
+    <span style="color:#222222">Configure logging</span>
 
-<span style="color:#222222">sudo</span>  <span style="color:#222222"> apt update</span>
-
-<span style="color:#222222">sudo</span>  <span style="color:#222222"> apt install </span>  <span style="color:#222222">nodejs</span>  <span style="color:#222222"> \-y</span>
-
-<span style="color:#222222">sudo</span>  <span style="color:#222222"> apt\-get install </span>  <span style="color:#222222">gnupg</span>  <span style="color:#222222"> curl</span>
-
-<span style="color:#222222">curl \-</span>  <span style="color:#222222">fsSL</span>  <span style="color:#222222"> https://www\.mongodb\.org/static/pgp/server\-6\.0\.asc | </span>  <span style="color:#222222">sudo</span>  <span style="color:#222222"> </span>  <span style="color:#222222">gpg</span>  <span style="color:#222222"> \-o /</span>  <span style="color:#222222">usr</span>  <span style="color:#222222">/share/keyrings/mongodb\-server\-6\.0\.gpg    \-\-</span>  <span style="color:#222222">dearmor</span>
-
-<span style="color:#222222">echo "deb \[ arch=amd64\,arm64 signed\-by=/</span>  <span style="color:#222222">usr</span>  <span style="color:#222222">/share/keyrings/mongodb\-server\-6\.0\.gpg \] https://repo\.mongodb\.org/apt/ubuntu focal/</span>  <span style="color:#222222">mongodb</span>  <span style="color:#222222">\-org/6\.0 multiverse" | </span>  <span style="color:#222222">sudo</span>  <span style="color:#222222"> tee /</span>  <span style="color:#222222">etc</span>  <span style="color:#222222">/apt/</span>  <span style="color:#222222">sources\.list\.d</span>  <span style="color:#222222">/mongodb\-org\-6\.0\.list</span>
-
-<span style="color:#222222">sudo</span>  <span style="color:#222222"> apt\-get update</span>
-
-<span style="color:#222222">sudo</span>  <span style="color:#222222"> apt\-get install \-y </span>  <span style="color:#222222">mongodb</span>  <span style="color:#222222">\-org=6\.0\.17 </span>  <span style="color:#222222">mongodb</span>  <span style="color:#222222">\-org\-database=6\.0\.17 </span>  <span style="color:#222222">mongodb</span>  <span style="color:#222222">\-org\-server=6\.0\.17 </span>  <span style="color:#222222">mongodb</span>  <span style="color:#222222">\-org\-mongos=6\.0\.17 </span>  <span style="color:#222222">mongodb</span>  <span style="color:#222222">\-org\-tools=6\.0\.17</span>
-
-<span style="color:#222222">sudo</span>  <span style="color:#222222"> </span>  <span style="color:#222222">systemctl</span>  <span style="color:#222222"> start </span>  <span style="color:#222222">mongod</span>
-
-<span style="color:#222222">open5gs Installation:</span>
-
-<span style="color:#222222">sudo</span>  <span style="color:#222222"> add\-apt\-repository ppa:open5gs/latest</span>
-
-<span style="color:#222222">sudo</span>  <span style="color:#222222"> apt update</span>
-
-<span style="color:#222222">sudo</span>  <span style="color:#222222"> apt install –y open5gs</span>
-
-<span style="color:#222222">curl \-</span>  <span style="color:#222222">fsSL</span>  <span style="color:#222222"> https://open5gs\.org/open5gs/assets/webui/install | </span>  <span style="color:#222222">sudo</span>  <span style="color:#222222"> \-E bash \-</span>
-
-<span style="color:#222222">Routing setting:</span>
-
-<span style="color:#222222">sudo</span>  <span style="color:#222222"> </span>  <span style="color:#222222">sysctl</span>  <span style="color:#222222"> \-w net\.ipv4\.ip\_forward=1</span>
-
-<span style="color:#222222">sudo</span>  <span style="color:#222222"> </span>  <span style="color:#222222">sysctl</span>  <span style="color:#222222"> \-w net\.ipv6\.conf\.all\.forwarding=1</span>
-
-<span style="color:#222222">sudo</span>  <span style="color:#222222"> iptables \-t </span>  <span style="color:#222222">nat</span>  <span style="color:#222222"> \-A POSTROUTING \-s 10\.45\.0\.0/16 \! \-o </span>  <span style="color:#222222">ogstun</span>  <span style="color:#222222"> \-j MASQUERADE</span>
-
-<span style="color:#222222">sudo</span>  <span style="color:#222222"> ip6tables \-t </span>  <span style="color:#222222">nat</span>  <span style="color:#222222"> \-A POSTROUTING \-s 2001:230:cafe::/48 \! \-o </span>  <span style="color:#222222">ogstun</span>  <span style="color:#222222"> \-j MASQUERADE</span>
-
-<span style="color:#222222"> __node\#1\(5G CN\) \- __ </span>  <span style="color:#222222"> __Open5GS Installation \- Continue__ </span>
-
-
-
-* <span style="color:#222222">Node\#1: Ubuntu 20\.04:</span>
-* <span style="color:#222222">Configure Open5GS</span>
-  * <span style="color:#222222">Out of the box\, the default configurations see all of the Open5GS components </span>
-  * <span style="color:#222222">fully configured for use on a single computer\. </span>
-  * <span style="color:#222222">They are set to communicate with each other using the local loopback address space \(127\.0\.0\.X\)\.</span>
-  * <span style="color:#222222">If needed:</span>
-    * <span style="color:#222222">Setup a 4G/ 5G NSA Core</span>
-    * <span style="color:#222222">Setup a 5G Core</span>
-    * <span style="color:#222222">Configure logging</span>
 * <span style="color:#222222">Register Subscriber Information:</span>
 * <span style="color:#222222">sudo</span>  <span style="color:#222222"> vi /</span>  <span style="color:#222222">etc</span>  <span style="color:#222222">/open5gs/</span>  <span style="color:#222222">amf\.yaml</span>  <span style="color:#222222">:</span>
   * <span style="color:#222222">\-\-\-\-\-\-\-\-</span>
