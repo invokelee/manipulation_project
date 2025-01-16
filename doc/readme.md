@@ -8,58 +8,54 @@ ICT Innovation Square
 
 2024\-09\-02 Lee\, Sanghoon
 
-<span style="color:#222222"> __Open5GS \+ UERANSIM 5G __ </span>  <span style="color:#222222"> __네트워크__ </span>  <span style="color:#222222"> __ __ </span>  <span style="color:#222222"> __구성__ </span>
+<span style="color:#222222"> __Open5GS \+ UERANSIM 5G __ </span>  <span style="color:#222222"> __Network__ </span>  <span style="color:#222222"> __ __ </span>  <span style="color:#222222"> __Overview__ </span>
 
-![](img%5CEx-open5gs-report-LeeSangHoon_0.png)
+<img src="img/Ex-open5gs-report-LeeSangHoon_0.png" width="50%">
 
-<span style="color:#222222"> __Network Configuration__ </span>
+# Network Configuration
 
 Network mode : NAT \+ Host\-Only Network
 
-![](img%5CEx-open5gs-report-LeeSangHoon_1.png)
+<img src="img/Ex-open5gs-report-LeeSangHoon_1.png" width="50%">
 
-![](img%5CEx-open5gs-report-LeeSangHoon_2.png)
+<img src="img/Ex-open5gs-report-LeeSangHoon_2.png" width="50%">
 
-![](img%5CEx-open5gs-report-LeeSangHoon_3.png)
+<img src="img/Ex-open5gs-report-LeeSangHoon_3.png" width="50%">
 
-<span style="color:#222222"> __Ubuntu pre\-installed VM image download__ </span>
+## <span style="color:#222222"> __Ubuntu pre\-installed VM image download__ </span>
 
 
 
-* <span style="color:#222222">Download Ubuntu 20\.04 VM image for Node\#1 and Node\#2 :</span>
+### 1 Download Ubuntu 20\.04 VM image for Node\#1 and Node\#2 :
   * <span style="color:#222222">Download from : </span>  <span style="color:#222222">[https://www\.linuxvmimages\.com/images/ubuntu\-2004/\#ubuntu\-20044](https://www.linuxvmimages.com/images/ubuntu-2004/#ubuntu-20044)</span>  <span style="color:#222222"> </span>
+<img src="img/Ex-open5gs-report-LeeSangHoon_5.png" width="50%">
+
+### 2 <span style="color:#222222">Open the image in VM tool and clone it to node1 and node2</span>
+
+### 3 <span style="color:#222222">Create Host only network with 192\.168\.19\.1/24</span>
+<img src="img/Ex-open5gs-report-LeeSangHoon_6.png" width="50%">
+
+### 4 <span style="color:#222222">Select the VM and click Setting tab and select adapter2 and select host only network which is created previous\.</span>
+<img src="img/Ex-open5gs-report-LeeSangHoon_4.png" width="50%">
+
+### 5 <span style="color:#222222">Run the node VM and set the IP of host only network interface</span>
 
 
-<span style="color:#222222">Select the VM and click Setting tab and select adapter2 and select host only network which is created previous\.</span>
-
-![](img%5CEx-open5gs-report-LeeSangHoon_4.png)
-
-![](img%5CEx-open5gs-report-LeeSangHoon_5.png)
-
-<span style="color:#222222">Open the image in VM tool and clone it to node1 and node2</span>
-
-<span style="color:#222222">Create Host only network with 192\.168\.19\.1/24</span>
-
-<span style="color:#222222">Run the node VM and set the IP of host only network interface</span>
-
-
-
-* <span style="color:#222222">c</span>  <span style="color:#222222">d  /</span>  <span style="color:#222222">etc</span>  <span style="color:#222222">/</span>  <span style="color:#222222">netplan</span>
-* <span style="color:#222222">sudo</span>  <span style="color:#222222"> vi 01\-network\-manager\-all\.yaml:</span>
-* <span style="color:#222222">add ethernets config \(ex\, for node1\) </span>
-  * <span style="color:#222222">\-\-\-\-\-\-\-\-</span>
-  * <span style="color:#222222"> ethernets:</span>
-  * <span style="color:#222222">    enp0s3:</span>
-  * <span style="color:#222222">      dhcp4: true</span>
-  * <span style="color:#222222">    enp0s8:</span>
-  * <span style="color:#222222">      dhcp4: false</span>
-  * <span style="color:#222222">      addresses: \[192\.168\.19\.11/24\] </span>
-  * <span style="color:#222222">\-\-\-\-\-\-\-\-</span>
-* <span style="color:#222222">sudo</span>  <span style="color:#222222"> </span>  <span style="color:#222222">netplan</span>  <span style="color:#222222"> apply</span>
-* <span style="color:#222222">\*\* for checking\, run “</span>  <span style="color:#222222">Ifconfig</span>  <span style="color:#222222">”</span>
-
-
-![](img%5CEx-open5gs-report-LeeSangHoon_6.png)
+```bash
+cd /etc/netplan
+sudo vi 01-network-manager-all.yaml:
+add ethernets config (ex, for node1)
+--------
+ethernets:
+ enp0s3:
+  dhcp4: true
+ enp0s8:
+  dhcp4: false
+  addresses: [192.168.19.11/24]
+--------
+sudo netplan apply
+** for checking, run "Ifconfig"
+```
 
 <span style="color:#222222"> __node\#1\(5G CN\) \- __ </span>  <span style="color:#222222"> __Open5GS Installation__ </span>
 
@@ -166,7 +162,7 @@ Network mode : NAT \+ Host\-Only Network
 * <span style="color:#222222">sudo</span>  <span style="color:#222222"> </span>  <span style="color:#222222">systemctl</span>  <span style="color:#222222"> restart open5gs\-upfd</span>
 
 
-![](img%5CEx-open5gs-report-LeeSangHoon_7.png)
+<img src="img/Ex-open5gs-report-LeeSangHoon_7.png" width="50%">
 
 <span style="color:#222222"> __node\#2\(5G RAN\) \- __ </span>  <span style="color:#222222"> __UERANSIM Installation__ </span>
 
@@ -202,7 +198,7 @@ Network mode : NAT \+ Host\-Only Network
   * <span style="color:#222222">\-\-\-\-\-\-\-\-</span>
 
 
-![](img%5CEx-open5gs-report-LeeSangHoon_8.png)
+<img src="img/Ex-open5gs-report-LeeSangHoon_8.png" width="50%">
 
 <span style="color:#222222">Node\#1: Open5GS</span>
 
@@ -254,7 +250,7 @@ open5gs   184805       1  0 05:26 ?        00:00:06 /usr/bin/open5gs\-amfd \-c /
     * <span style="color:#222222"> Default test </span>  <span style="color:#222222">imsi</span>  <span style="color:#222222"> number</span>
 
 
-![](img%5CEx-open5gs-report-LeeSangHoon_9.png)
+<img src="img/Ex-open5gs-report-LeeSangHoon_9.png" width="50%">
 
 <span style="color:#222222">cd ~/UERANSIM/build</span>  <span style="color:#222222">\./nr\-</span>  <span style="color:#222222">gnb</span>  <span style="color:#222222"> \-c \.\./config/open5gs\-gnb\.yaml</span>
 
@@ -264,12 +260,12 @@ open5gs   184805       1  0 05:26 ?        00:00:06 /usr/bin/open5gs\-amfd \-c /
 
 <span style="color:#222222">Node\#2: UERANSIM</span>
 
-![](img%5CEx-open5gs-report-LeeSangHoon_10.png)
+<img src="img/Ex-open5gs-report-LeeSangHoon_10.png" width="50%">
 
 <span style="color:#222222"> __Run Wireshark on the node\#1\, Capture for any__ </span>
 
 <span style="color:#222222">Node\#1: </span>  <span style="color:#222222">wireshark</span>  <span style="color:#222222">: filter </span>  <span style="color:#222222">ip\.addr</span>  <span style="color:#222222"> == 192\.168\.19\.12 => Node\#2</span>
 
-![](img%5CEx-open5gs-report-LeeSangHoon_11.png)
+<img src="img/Ex-open5gs-report-LeeSangHoon_11.png" width="50%">
 
 
